@@ -22,7 +22,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Georgia,'Times New Roman',serif;text-align:center}
 #sparkles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
 .star{position:absolute;top:-16px;border-radius:50%;opacity:0;animation:fall linear infinite;box-shadow:0 0 12px 3px currentColor}
-.twinkle{position:absolute;border-radius:50%;opacity:.38;animation:twinkle 2.8s ease-in-out infinite alternate;box-shadow:0 0 12px 3px currentColor}
+.twinkle{position:absolute;top:-16px;border-radius:50%;opacity:0;animation:fall linear infinite;box-shadow:0 0 12px 3px currentColor}
 @keyframes twinkle{from{opacity:.22;transform:scale(.7)}to{opacity:1;transform:scale(1.5)}}
 @keyframes fall{0%{transform:translate3d(0,-5vh,0) scale(.45) rotate(0);opacity:0}10%{opacity:.85}82%{opacity:.65}100%{transform:translate3d(var(--drift),110vh,0) scale(1.15) rotate(180deg);opacity:0}}
 .transition-star{position:absolute;top:-8vh;border-radius:50%;animation:shower linear forwards;box-shadow:0 0 16px 4px currentColor}
@@ -107,8 +107,8 @@ h1{font-size:clamp(25px,6vw,38px);font-weight:400;margin:8px 0 16px}
  const v=[Math.floor(diff/86400000),Math.floor(diff%86400000/3600000),Math.floor(diff%3600000/60000),Math.floor(diff%60000/1000)];ids.forEach((id,i)=>document.getElementById(id).textContent=String(v[i]).padStart(2,'0'));}
  update();setInterval(update,1000);
  const layer=document.getElementById('sparkles'),colors=['#d7b84f','#8eafc6','#a98768'];
- for(let i=0;i<42;i++){const s=document.createElement('i');s.className='star';s.style.left=Math.random()*100+'%';s.style.color=colors[i%3];s.style.animationDuration=8+Math.random()*12+'s';s.style.animationDelay=-Math.random()*20+'s';s.style.setProperty('--drift',(Math.random()-.5)*110+'px');s.style.width=s.style.height=7+Math.random()*7+'px';layer.appendChild(s);}
- for(let i=0;i<64;i++){const s=document.createElement('i');s.className='twinkle';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.color=colors[i%3];s.style.width=s.style.height=5+Math.random()*6+'px';s.style.animationDelay=(-Math.random()*3)+'s';layer.appendChild(s);}
+ for(let i=0;i<18;i++){const s=document.createElement('i');s.className='star';s.style.left=Math.random()*100+'%';s.style.color=colors[i%3];s.style.animationDuration=8+Math.random()*12+'s';s.style.animationDelay=-Math.random()*20+'s';s.style.setProperty('--drift',(Math.random()-.5)*110+'px');s.style.width=s.style.height=7+Math.random()*7+'px';layer.appendChild(s);}
+ for(let i=0;i<0;i++){const s=document.createElement('i');s.className='twinkle';s.style.left=Math.random()*100+'%';s.style.color=colors[i%3];s.style.width=s.style.height=5+Math.random()*5+'px';s.style.animationDuration=10+Math.random()*9+'s';s.style.animationDelay=-Math.random()*18+'s';s.style.setProperty('--drift',(Math.random()-.5)*90+'px');layer.appendChild(s);}
 })();
 </script>
 </body></html>
