@@ -49,43 +49,63 @@ h1{font-size:clamp(25px,6vw,38px);font-weight:400;margin:8px 0 16px}
 <div id="sparkles" aria-hidden="true"></div>
 
 <section class="screen active" id="cover" aria-label="Portada de la invitación">
-  <img class="art" src="portada_1.jpg" alt="Portada original de la invitación al bautizo de Mateo Idai" fetchpriority="high">
+  <img class="art" src="./portada_1.jpg" alt="Portada original de la invitación al bautizo de Mateo Idai" fetchpriority="high">
 </section>
 
 <section class="screen" id="details" aria-label="Detalles del bautizo">
-  <img class="art" src="datos.jpg" alt="Página original con los detalles del bautizo de Mateo Idai" loading="lazy">
+  <img class="art" src="./datos.jpg" alt="Página original con los detalles del bautizo de Mateo Idai" loading="lazy">
 </section>
 
 <script>
 (function(){
- const cover=document.getElementById('cover'),details=document.getElementById('details');
- function starShower(){
-   const palette=['#e3bd45','#91b6d0','#a98261'];
-   for(let i=0;i<58;i++){
-     const s=document.createElement('i');s.className='transition-star';s.style.left=Math.random()*100+'%';s.style.color=palette[i%3];
-     s.style.width=s.style.height=(3+Math.random()*5)+'px';s.style.setProperty('--drift',((Math.random()-.5)*150)+'px');
-     s.style.animationDuration=(.95+Math.random()*.95)+'s';s.style.animationDelay=(Math.random()*.38)+'s';layer.appendChild(s);
-     s.addEventListener('animationend',()=>s.remove(),{once:true});
-   }
- }
- function showDetails(){starShower();cover.classList.remove('active');details.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
- function showCover(){starShower();details.classList.remove('active');cover.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
- document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',showDetails));
- document.querySelectorAll('[data-cover]').forEach(b=>b.addEventListener('click',showCover));
- function addCalendar(){
-   const start='20261219T120000',end='20261219T130000';
-   const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Fezoj//Invitacion Mateo Idai//ES','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:mateo-idai-bautizo-20261219@fezoj','DTSTAMP:20260101T120000Z','DTSTART;TZID=America/Mexico_City:'+start,'DTEND;TZID=America/Mexico_City:'+end,'SUMMARY:Bautizo de Mateo Idai','DESCRIPTION:Celebración del bautizo de Mateo Idai. Consulta la invitación para ver las ubicaciones.','END:VEVENT','END:VCALENDAR'].join('\r\n');
-   const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-   a.href=url;a.download='Bautizo-Mateo-Idai.ics';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
- }
- document.querySelectorAll('[data-calendar]').forEach(b=>b.addEventListener('click',addCalendar));
- const target=new Date('2026-12-19T12:00:00-06:00').getTime(),ids=['days','hours','minutes','seconds'],message=document.getElementById('countdown-message');
- function update(){const diff=target-Date.now();if(diff<=0){ids.forEach(id=>document.getElementById(id).textContent='0');message.textContent=diff>-86400000?'¡Hoy celebramos el bautizo de Mateo Idai!':'Gracias por acompañarnos en este día tan especial.';return;}
- const v=[Math.floor(diff/86400000),Math.floor(diff%86400000/3600000),Math.floor(diff%3600000/60000),Math.floor(diff%60000/1000)];ids.forEach((id,i)=>document.getElementById(id).textContent=String(v[i]).padStart(2,'0'));}
- update();setInterval(update,1000);
- const layer=document.getElementById('sparkles'),colors=['#d7b84f','#8eafc6','#a98768'];
- for(let i=0;i<18;i++){const s=document.createElement('i');s.className='star';s.style.left=Math.random()*100+'%';s.style.color=colors[i%3];s.style.animationDuration=8+Math.random()*12+'s';s.style.animationDelay=-Math.random()*20+'s';s.style.setProperty('--drift',(Math.random()-.5)*110+'px');s.style.width=s.style.height=7+Math.random()*7+'px';layer.appendChild(s);}
- for(let i=0;i<0;i++){const s=document.createElement('i');s.className='twinkle';s.style.left=Math.random()*100+'%';s.style.color=colors[i%3];s.style.width=s.style.height=5+Math.random()*5+'px';s.style.animationDuration=10+Math.random()*9+'s';s.style.animationDelay=-Math.random()*18+'s';s.style.setProperty('--drift',(Math.random()-.5)*90+'px');layer.appendChild(s);}
+  const layer = document.getElementById('sparkles');
+  if (!layer) return;
+
+  // Estrellas ambientales: pocas, visibles y todas con movimiento descendente.
+  const colors = ['#d7b84f', '#8eafc6', '#a98768'];
+  const totalStars = 18;
+
+  for (let i = 0; i < totalStars; i++) {
+    const star = document.createElement('i');
+    star.className = 'star';
+    star.style.left = (Math.random() * 100) + '%';
+    star.style.color = colors[i % colors.length];
+    star.style.width = star.style.height = (7 + Math.random() * 7) + 'px';
+    star.style.animationDuration = (10 + Math.random() * 9) + 's';
+    star.style.animationDelay = (-Math.random() * 18) + 's';
+    star.style.setProperty('--drift', ((Math.random() - 0.5) * 90) + 'px');
+    layer.appendChild(star);
+  }
+
+  // Evita errores si el contador aún no tiene sus elementos superpuestos.
+  const target = new Date('2026-12-19T12:00:00-06:00').getTime();
+  const ids = ['days', 'hours', 'minutes', 'seconds'];
+  const message = document.getElementById('countdown-message');
+
+  function updateCountdown() {
+    const nodes = ids.map(id => document.getElementById(id));
+    if (nodes.some(node => !node)) return;
+
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      nodes.forEach(node => node.textContent = '0');
+      if (message) message.textContent = '¡Hoy celebramos el bautizo de Mateo Idai!';
+      return;
+    }
+
+    const values = [
+      Math.floor(diff / 86400000),
+      Math.floor((diff % 86400000) / 3600000),
+      Math.floor((diff % 3600000) / 60000),
+      Math.floor((diff % 60000) / 1000)
+    ];
+    nodes.forEach((node, index) => {
+      node.textContent = String(values[index]).padStart(2, '0');
+    });
+  }
+
+  updateCountdown();
+  window.setInterval(updateCountdown, 1000);
 })();
 </script>
 </body></html>
