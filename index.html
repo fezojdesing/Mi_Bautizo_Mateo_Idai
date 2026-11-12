@@ -7,9 +7,13 @@
 <style>
 :root{--cream:#f8f5ef;--ink:#514b43;--gold:#c6a64d}
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Georgia,'Times New Roman',serif;text-align:center}
-#sparkles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5}
-.star{position:absolute;top:-12px;border-radius:50%;opacity:0;animation:fall linear infinite;box-shadow:0 0 7px currentColor}
-@keyframes fall{0%{transform:translate3d(0,-5vh,0) scale(.5);opacity:0}12%{opacity:.6}85%{opacity:.45}100%{transform:translate3d(var(--drift),110vh,0) scale(1);opacity:0}}
+#sparkles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+.star{position:absolute;top:-12px;border-radius:50%;opacity:0;animation:fall linear infinite;box-shadow:0 0 8px currentColor}
+.twinkle{position:absolute;border-radius:50%;opacity:.25;animation:twinkle 2.8s ease-in-out infinite alternate;box-shadow:0 0 7px currentColor}
+@keyframes twinkle{from{opacity:.12;transform:scale(.65)}to{opacity:.8;transform:scale(1.35)}}
+@keyframes fall{0%{transform:translate3d(0,-5vh,0) scale(.45) rotate(0);opacity:0}10%{opacity:.85}82%{opacity:.65}100%{transform:translate3d(var(--drift),110vh,0) scale(1.15) rotate(180deg);opacity:0}}
+.transition-star{position:absolute;top:-8vh;border-radius:50%;animation:shower linear forwards;box-shadow:0 0 12px 2px currentColor}
+@keyframes shower{0%{transform:translate3d(0,-8vh,0) scale(.3) rotate(0);opacity:0}12%{opacity:1}100%{transform:translate3d(var(--drift),112vh,0) scale(1.35) rotate(240deg);opacity:0}}
 .screen{display:none;min-height:100svh;width:100%;padding:clamp(14px,3vw,28px) 14px 34px;position:relative;z-index:1}
 .screen.active{display:flex;flex-direction:column;align-items:center;animation:show .65s ease both}
 @keyframes show{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -65,8 +69,17 @@ h1{font-size:clamp(25px,6vw,38px);font-weight:400;margin:8px 0 16px}
 <script>
 (function(){
  const cover=document.getElementById('cover'),details=document.getElementById('details');
- function showDetails(){cover.classList.remove('active');details.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
- function showCover(){details.classList.remove('active');cover.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+ function starShower(){
+   const palette=['#e3bd45','#91b6d0','#a98261'];
+   for(let i=0;i<58;i++){
+     const s=document.createElement('i');s.className='transition-star';s.style.left=Math.random()*100+'%';s.style.color=palette[i%3];
+     s.style.width=s.style.height=(3+Math.random()*5)+'px';s.style.setProperty('--drift',((Math.random()-.5)*150)+'px');
+     s.style.animationDuration=(.95+Math.random()*.95)+'s';s.style.animationDelay=(Math.random()*.38)+'s';layer.appendChild(s);
+     s.addEventListener('animationend',()=>s.remove(),{once:true});
+   }
+ }
+ function showDetails(){starShower();cover.classList.remove('active');details.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+ function showCover(){starShower();details.classList.remove('active');cover.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
  document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',showDetails));
  document.querySelectorAll('[data-cover]').forEach(b=>b.addEventListener('click',showCover));
  function addCalendar(){
@@ -81,7 +94,8 @@ h1{font-size:clamp(25px,6vw,38px);font-weight:400;margin:8px 0 16px}
  const v=[Math.floor(diff/86400000),Math.floor(diff%86400000/3600000),Math.floor(diff%3600000/60000),Math.floor(diff%60000/1000)];ids.forEach((id,i)=>document.getElementById(id).textContent=String(v[i]).padStart(2,'0'));}
  update();setInterval(update,1000);
  const layer=document.getElementById('sparkles'),colors=['#d7b84f','#8eafc6','#a98768'];
- for(let i=0;i<26;i++){const s=document.createElement('i');s.className='star';s.style.left=Math.random()*100+'%';s.style.color=colors[i%3];s.style.animationDuration=9+Math.random()*13+'s';s.style.animationDelay=-Math.random()*20+'s';s.style.setProperty('--drift',(Math.random()-.5)*90+'px');s.style.width=s.style.height=3+Math.random()*3+'px';layer.appendChild(s);}
+ for(let i=0;i<42;i++){const s=document.createElement('i');s.className='star';s.style.left=Math.random()*100+'%';s.style.color=colors[i%3];s.style.animationDuration=8+Math.random()*12+'s';s.style.animationDelay=-Math.random()*20+'s';s.style.setProperty('--drift',(Math.random()-.5)*110+'px');s.style.width=s.style.height=3+Math.random()*4+'px';layer.appendChild(s);}
+ for(let i=0;i<64;i++){const s=document.createElement('i');s.className='twinkle';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.color=colors[i%3];s.style.width=s.style.height=1.5+Math.random()*3+'px';s.style.animationDelay=(-Math.random()*3)+'s';layer.appendChild(s);}
 })();
 </script>
 </body></html>
