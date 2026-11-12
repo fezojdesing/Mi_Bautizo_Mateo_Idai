@@ -84,7 +84,7 @@ h1{font-size:clamp(25px,6vw,38px);font-weight:400;margin:8px 0 16px}
  document.querySelectorAll('[data-cover]').forEach(b=>b.addEventListener('click',showCover));
  function addCalendar(){
    const start='20261219T120000',end='20261219T130000';
-   const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Fezoj//Invitacion Mateo Idai//ES','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:mateo-idai-bautizo-20261219@fezoj','DTSTAMP:20260101T120000Z','DTSTART;TZID=America/Mexico_City:'+start,'DTEND;TZID=America/Mexico_City:'+end,'SUMMARY:Bautizo de Mateo Idai','DESCRIPTION:Celebración del bautizo de Mateo Idai. Consulta la invitación para ver las ubicaciones.','END:VEVENT','END:VCALENDAR'].join('\\r\\n');
+   const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Fezoj//Invitacion Mateo Idai//ES','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:mateo-idai-bautizo-20261219@fezoj','DTSTAMP:20260101T120000Z','DTSTART;TZID=America/Mexico_City:'+start,'DTEND;TZID=America/Mexico_City:'+end,'SUMMARY:Bautizo de Mateo Idai','DESCRIPTION:Celebración del bautizo de Mateo Idai. Consulta la invitación para ver las ubicaciones.','END:VEVENT','END:VCALENDAR'].join('\r\n');
    const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
    a.href=url;a.download='Bautizo-Mateo-Idai.ics';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
  }
