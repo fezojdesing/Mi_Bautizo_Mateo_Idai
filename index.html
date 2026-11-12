@@ -1,46 +1,51 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f8f5ef">
-<meta name="description" content="Invitación al bautizo de Mateo Idai">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8f5ef"><meta name="description" content="Invitación al bautizo de Mateo Idai">
 <title>Mi Bautizo · Mateo Idai</title>
 <style>
-:root{--cream:#f8f5ef;--ink:#514b43;--gold:#c6a64d;--blue:#8ca9bd;--brown:#9a7657}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--cream);color:var(--ink);font-family:Georgia,'Times New Roman',serif;text-align:center}
-main{width:min(100%,760px);margin:auto;padding:clamp(12px,3vw,28px) 14px 40px;position:relative;z-index:1}
-.invite-page{display:block;width:100%;height:auto;margin:0 auto 18px;border-radius:2px;box-shadow:0 8px 28px #4a40331c;opacity:0;transform:translateY(18px);animation:arrive .9s ease forwards}
-.invite-page:nth-of-type(2){animation-delay:.25s}
-@keyframes arrive{to{opacity:1;transform:translateY(0)}}
-.countdown{margin:26px auto 22px;padding:22px 12px;border-top:1px solid #c6a64d66;border-bottom:1px solid #c6a64d66}
-.eyebrow{font:11px/1.4 Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#8c795b}
+:root{--cream:#f8f5ef;--ink:#514b43;--gold:#c6a64d}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Georgia,'Times New Roman',serif;text-align:center}
+#sparkles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+.star{position:absolute;top:-12px;border-radius:50%;opacity:0;animation:fall linear infinite;box-shadow:0 0 7px currentColor}
+@keyframes fall{0%{transform:translate3d(0,-5vh,0) scale(.5);opacity:0}12%{opacity:.6}85%{opacity:.45}100%{transform:translate3d(var(--drift),110vh,0) scale(1);opacity:0}}
+.screen{display:none;min-height:100svh;width:100%;padding:clamp(14px,3vw,28px) 14px 34px;position:relative;z-index:1}
+.screen.active{display:flex;flex-direction:column;align-items:center;animation:show .65s ease both}
+@keyframes show{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.art{display:block;width:min(100%,720px);height:auto;margin:0 auto 18px;box-shadow:0 8px 28px #4a40331c}
+.controls{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:11px;margin:10px auto 16px;width:min(100%,720px)}
+.action{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 21px;border:1px solid #b99a58;border-radius:30px;background:#fffaf2;color:#64563e;text-decoration:none;font:12px Arial,sans-serif;letter-spacing:.04em;cursor:pointer;transition:transform .2s,background .2s}
+.action:hover,.action:focus-visible{transform:translateY(-2px);background:#f1e8d7;outline:2px solid #b99a5870;outline-offset:2px}
+.primary{background:#e9dfca}.eyebrow{font:11px/1.5 Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#8c795b}
 h1{font-size:clamp(25px,6vw,38px);font-weight:400;margin:8px 0 16px}
-.timer{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:480px;margin:auto}
+.countdown{width:min(100%,620px);margin:12px auto 18px;padding:19px 10px;border-top:1px solid #c6a64d66;border-bottom:1px solid #c6a64d66}
+.timer{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;max-width:460px;margin:auto}
 .unit{padding:10px 2px;background:#fffaf2b8;border:1px solid #c6a64d40;border-radius:8px}
-.number{display:block;font:clamp(24px,6vw,34px)/1.1 Georgia,serif;color:#8c7548;font-variant-numeric:tabular-nums}
+.number{display:block;font:clamp(23px,6vw,33px)/1.1 Georgia,serif;color:#8c7548;font-variant-numeric:tabular-nums}
 .unit small{font:10px Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#82796c}
-.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:22px auto}
-.action{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 20px;border:1px solid #b99a58;border-radius:30px;background:#fffaf2;color:#64563e;text-decoration:none;font:12px Arial,sans-serif;letter-spacing:.04em;transition:transform .2s,background .2s}
-.action:hover,.action:focus-visible{transform:translateY(-2px);background:#f1e8d7;outline:none}
-.note{font:12px/1.6 Arial,sans-serif;color:#8a8175;margin-top:20px}
-#sparkles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
-.star{position:absolute;top:-12px;width:5px;height:5px;border-radius:50%;opacity:0;animation:fall linear infinite;box-shadow:0 0 7px currentColor}
-@keyframes fall{0%{transform:translate3d(0,-5vh,0) scale(.5);opacity:0}12%{opacity:.65}85%{opacity:.5}100%{transform:translate3d(var(--drift),110vh,0) scale(1);opacity:0}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}}
+.note{font:12px/1.6 Arial,sans-serif;color:#8a8175;margin:12px auto}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div id="sparkles" aria-hidden="true"></div>
-<main>
-  <img class="invite-page" src="portada_1.jpg" alt="Portada de la invitación al bautizo de Mateo Idai" fetchpriority="high">
-  <img class="invite-page" src="datos.jpg" alt="Detalles de la invitación al bautizo de Mateo Idai" loading="lazy">
-  <section class="countdown" aria-label="Cuenta regresiva para el bautizo">
-    <div class="eyebrow">Falta muy poco para celebrar</div>
-    <h1>La cuenta regresiva</h1>
-    <div class="timer" aria-live="off">
+
+<section class="screen active" id="cover" aria-label="Portada de la invitación">
+  <img class="art" src="portada_1.jpg" alt="Portada original de la invitación al bautizo de Mateo Idai" fetchpriority="high">
+  <div class="controls">
+    <button class="action primary" type="button" data-open>▶ Play</button>
+    <button class="action" type="button" data-open>Abrir invitación</button>
+    <button class="action" type="button" data-calendar>Agendar evento</button>
+  </div>
+  <p class="note">Toca para abrir la invitación y conocer los detalles.</p>
+</section>
+
+<section class="screen" id="details" aria-label="Detalles del bautizo">
+  <img class="art" src="datos.jpg" alt="Página original con los detalles del bautizo de Mateo Idai" loading="lazy">
+  <section class="countdown" aria-label="Cuenta regresiva">
+    <div class="eyebrow">Falta muy poco para celebrar</div><h1>La cuenta regresiva</h1>
+    <div class="timer">
       <div class="unit"><span class="number" id="days">—</span><small>Días</small></div>
       <div class="unit"><span class="number" id="hours">—</span><small>Horas</small></div>
       <div class="unit"><span class="number" id="minutes">—</span><small>Minutos</small></div>
@@ -48,41 +53,35 @@ h1{font-size:clamp(25px,6vw,38px);font-weight:400;margin:8px 0 16px}
     </div>
     <p class="note" id="countdown-message">19 de diciembre de 2026 · 12:00 del mediodía</p>
   </section>
-  <nav class="actions" aria-label="Ubicaciones del evento">
+  <nav class="controls" aria-label="Ubicaciones">
     <a class="action" href="https://maps.app.goo.gl/ys9SZmy4LGqBp9BU8" target="_blank" rel="noopener noreferrer">Cómo llegar a la iglesia</a>
     <a class="action" href="https://maps.app.goo.gl/JEPxGaJPfs8Sdn3x7" target="_blank" rel="noopener noreferrer">Cómo llegar a la recepción</a>
+    <button class="action" type="button" data-calendar>Agendar evento</button>
+    <button class="action" type="button" data-cover>Volver a portada</button>
   </nav>
   <p class="note">Con cariño, te esperamos para compartir este día especial.</p>
-</main>
+</section>
+
 <script>
 (function(){
-  const target = new Date('2026-12-19T12:00:00-06:00').getTime();
-  const ids = ['days','hours','minutes','seconds'];
-  const message = document.getElementById('countdown-message');
-  function update(){
-    const diff = target - Date.now();
-    if(diff <= 0){
-      ids.forEach(id=>document.getElementById(id).textContent='0');
-      message.textContent = diff > -86400000 ? '¡Hoy celebramos el bautizo de Mateo Idai!' : 'Gracias por acompañarnos en este día tan especial.';
-      return;
-    }
-    const values=[Math.floor(diff/86400000),Math.floor(diff%86400000/3600000),Math.floor(diff%3600000/60000),Math.floor(diff%60000/1000)];
-    ids.forEach((id,i)=>document.getElementById(id).textContent=String(values[i]).padStart(2,'0'));
-  }
-  update(); setInterval(update,1000);
-  const layer=document.getElementById('sparkles');
-  const colors=['#d7b84f','#8eafc6','#a98768'];
-  for(let i=0;i<30;i++){
-    const star=document.createElement('i');star.className='star';
-    star.style.left=(Math.random()*100)+'%';
-    star.style.color=colors[i%colors.length];
-    star.style.animationDuration=(9+Math.random()*13)+'s';
-    star.style.animationDelay=(-Math.random()*20)+'s';
-    star.style.setProperty('--drift',((Math.random()-.5)*90)+'px');
-    star.style.width=star.style.height=(3+Math.random()*3)+'px';
-    layer.appendChild(star);
-  }
+ const cover=document.getElementById('cover'),details=document.getElementById('details');
+ function showDetails(){cover.classList.remove('active');details.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+ function showCover(){details.classList.remove('active');cover.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+ document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',showDetails));
+ document.querySelectorAll('[data-cover]').forEach(b=>b.addEventListener('click',showCover));
+ function addCalendar(){
+   const start='20261219T120000',end='20261219T130000';
+   const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Fezoj//Invitacion Mateo Idai//ES','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:mateo-idai-bautizo-20261219@fezoj','DTSTAMP:20260101T120000Z','DTSTART;TZID=America/Mexico_City:'+start,'DTEND;TZID=America/Mexico_City:'+end,'SUMMARY:Bautizo de Mateo Idai','DESCRIPTION:Celebración del bautizo de Mateo Idai. Consulta la invitación para ver las ubicaciones.','END:VEVENT','END:VCALENDAR'].join('\\r\\n');
+   const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+   a.href=url;a.download='Bautizo-Mateo-Idai.ics';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ }
+ document.querySelectorAll('[data-calendar]').forEach(b=>b.addEventListener('click',addCalendar));
+ const target=new Date('2026-12-19T12:00:00-06:00').getTime(),ids=['days','hours','minutes','seconds'],message=document.getElementById('countdown-message');
+ function update(){const diff=target-Date.now();if(diff<=0){ids.forEach(id=>document.getElementById(id).textContent='0');message.textContent=diff>-86400000?'¡Hoy celebramos el bautizo de Mateo Idai!':'Gracias por acompañarnos en este día tan especial.';return;}
+ const v=[Math.floor(diff/86400000),Math.floor(diff%86400000/3600000),Math.floor(diff%3600000/60000),Math.floor(diff%60000/1000)];ids.forEach((id,i)=>document.getElementById(id).textContent=String(v[i]).padStart(2,'0'));}
+ update();setInterval(update,1000);
+ const layer=document.getElementById('sparkles'),colors=['#d7b84f','#8eafc6','#a98768'];
+ for(let i=0;i<26;i++){const s=document.createElement('i');s.className='star';s.style.left=Math.random()*100+'%';s.style.color=colors[i%3];s.style.animationDuration=9+Math.random()*13+'s';s.style.animationDelay=-Math.random()*20+'s';s.style.setProperty('--drift',(Math.random()-.5)*90+'px');s.style.width=s.style.height=3+Math.random()*3+'px';layer.appendChild(s);}
 })();
 </script>
-</body>
-</html>
+</body></html>
