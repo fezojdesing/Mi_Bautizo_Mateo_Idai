@@ -66,7 +66,7 @@ body.intro-playing .page-tools{display:none}
 body:not(.details-open) #back-cover{visibility:hidden}
 .glass-control{pointer-events:auto;min-height:44px;min-width:104px;padding:10px 17px;border:1px solid rgba(255,255,255,.78);border-radius:999px;color:#fff;font:700 14px/1.1 'Baloo 2',cursive;letter-spacing:.015em;background:linear-gradient(135deg,rgba(142,175,198,.94),rgba(169,135,104,.9) 58%,rgba(215,184,79,.94));box-shadow:0 5px 18px rgba(93,112,124,.2),inset 0 1px 2px rgba(255,255,255,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);cursor:pointer;text-shadow:0 1px 2px rgba(65,75,78,.35)}
 .glass-control:active{transform:scale(.96)}
-#music-player{position:fixed;left:-240px;top:0;width:200px;height:200px;opacity:.001;pointer-events:none;border:0}
+#music-player{position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0}
 @media(max-width:360px){.page-tools{padding:0 9px}.glass-control{min-width:96px;padding:10px 13px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){.star,.transition-star{display:none}.screen.active{animation:none}}
 </style>
@@ -115,7 +115,7 @@ body:not(.details-open) #back-cover{visibility:hidden}
   <button class="glass-control" id="back-cover" type="button">‹ Portada</button>
   <button class="glass-control" id="music-toggle" type="button" aria-pressed="false">Activar música</button>
 </div>
-<audio id="music-player" preload="auto" loop>
+<audio id="music-player" preload="auto" autoplay loop>
   <source src="./musica.mp3" type="audio/mpeg">
 </audio>
 
@@ -130,6 +130,13 @@ body:not(.details-open) #back-cover{visibility:hidden}
   const musicPlayer = document.getElementById('music-player');
   const musicButton = document.getElementById('music-toggle');
   let musicPlaying = false;
+  let musicStartRequested = false;
+
+  // Solicita la descarga anticipada del MP3 para reducir la espera al abrir.
+  musicPlayer.preload = 'auto';
+  musicPlayer.volume = 1;
+  musicPlayer.muted = false;
+  musicPlayer.load();
 
   function updateMusicButton() {
     musicPlaying = !musicPlayer.paused && !musicPlayer.ended;
@@ -138,9 +145,21 @@ body:not(.details-open) #back-cover{visibility:hidden}
   }
 
   function playMusicFromGesture() {
+    if (!musicPlayer.paused && !musicPlayer.ended) {
+      updateMusicButton();
+      return;
+    }
+    musicStartRequested = true;
+    musicPlayer.muted = false;
+    musicPlayer.volume = 1;
+    // play() se ejecuta directamente dentro del gesto del usuario (iOS/Android).
     const playback = musicPlayer.play();
     if (playback && typeof playback.then === 'function') {
-      playback.then(updateMusicButton).catch(() => {
+      playback.then(() => {
+        musicStartRequested = false;
+        updateMusicButton();
+      }).catch(() => {
+        musicStartRequested = false;
         musicPlaying = false;
         updateMusicButton();
       });
@@ -150,8 +169,13 @@ body:not(.details-open) #back-cover{visibility:hidden}
   }
 
   musicPlayer.addEventListener('play', updateMusicButton);
+  musicPlayer.addEventListener('playing', updateMusicButton);
   musicPlayer.addEventListener('pause', updateMusicButton);
   musicPlayer.addEventListener('ended', updateMusicButton);
+  musicPlayer.addEventListener('canplaythrough', () => {
+    // El archivo queda preparado antes de que el invitado toque "Abrir".
+    musicPlayer.dataset.prepared = 'true';
+  });
   musicButton.textContent = 'Activar música';
 
   // Unas cuantas estrellas grandes que cruzan toda la pantalla de arriba hacia abajo.
@@ -224,9 +248,16 @@ body:not(.details-open) #back-cover{visibility:hidden}
     showPage('details');
   });
 
-  document.getElementById('cover-open').addEventListener('click', () => {
-    // Inicia el audio local dentro del mismo toque que abre la invitación.
-    playMusicFromGesture();
+  const openButton = document.getElementById('cover-open');
+
+  // En móviles, iniciar en pointerdown aprovecha el gesto físico antes de los cambios de pantalla.
+  openButton.addEventListener('pointerdown', () => {
+    if (musicPlayer.paused || musicPlayer.ended) playMusicFromGesture();
+  }, {passive:true});
+
+  openButton.addEventListener('click', () => {
+    // Respaldo para navegadores que no disparan pointer events; nunca reinicia una pista ya iniciada.
+    if (musicPlayer.paused || musicPlayer.ended) playMusicFromGesture();
     history.pushState({page:'video'}, '', '#video');
     playIntroVideo();
   });
