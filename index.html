@@ -50,12 +50,12 @@ body{font-family:Arial,sans-serif}
 .count-number{font:800 clamp(24px,7vw,34px)/.92 'Baloo 2',cursive;letter-spacing:-.035em;color:#fff;-webkit-text-stroke:.45px rgba(255,255,255,.9);text-shadow:0 2px 4px rgba(31,79,119,.5),0 0 2px rgba(31,79,119,.35)}
 .count-label{font:800 clamp(8px,2vw,11px)/1 'Baloo 2',cursive;text-transform:uppercase;letter-spacing:.035em;margin-top:1px;color:#fff;text-shadow:0 1px 3px rgba(25,76,115,.65)}
 @media(min-width:700px){.screen{padding-top:18px}.count-number{font-size:34px}.count-label{font-size:11px}}
-.page-tools{position:fixed;z-index:25;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));display:none;justify-content:space-between;align-items:center;padding:0 14px;pointer-events:none}
-body.details-open .page-tools{display:flex}
-.glass-control{pointer-events:auto;min-height:44px;min-width:104px;padding:11px 17px;border:1px solid rgba(255,255,255,.55);border-radius:999px;color:#fff;font:600 13px Arial,sans-serif;letter-spacing:.02em;background:linear-gradient(125deg,rgba(143,103,188,.88),rgba(222,133,166,.88) 52%,rgba(222,177,104,.9));box-shadow:0 5px 20px rgba(74,53,78,.22),inset 0 1px 2px rgba(255,255,255,.65);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);cursor:pointer;text-shadow:0 1px 2px rgba(65,42,70,.25)}
+.page-tools{position:fixed;z-index:25;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:center;padding:0 14px;pointer-events:none}
+body:not(.details-open) #back-cover{visibility:hidden}
+.glass-control{pointer-events:auto;min-height:44px;min-width:104px;padding:10px 17px;border:1px solid rgba(255,255,255,.78);border-radius:999px;color:#fff;font:700 14px/1.1 'Baloo 2',cursive;letter-spacing:.015em;background:linear-gradient(135deg,rgba(142,175,198,.94),rgba(169,135,104,.9) 58%,rgba(215,184,79,.94));box-shadow:0 5px 18px rgba(93,112,124,.2),inset 0 1px 2px rgba(255,255,255,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);cursor:pointer;text-shadow:0 1px 2px rgba(65,75,78,.35)}
 .glass-control:active{transform:scale(.96)}
 #music-player{position:fixed;left:-240px;top:0;width:200px;height:200px;opacity:.001;pointer-events:none;border:0}
-@media(max-width:360px){.page-tools{padding:0 9px}.glass-control{min-width:96px;padding:10px 13px;font-size:12px}}
+@media(max-width:360px){.page-tools{padding:0 9px}.glass-control{min-width:96px;padding:10px 13px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){.star,.transition-star{display:none}.screen.active{animation:none}}
 </style>
 </head>
@@ -104,6 +104,7 @@ body.details-open .page-tools{display:flex}
   const videoId = 'RTInYbT-amM';
   let musicStarted = false;
   let musicPlaying = false;
+  let musicUnlocked = false;
 
   function sendYouTubeCommand(func) {
     if (!musicFrame.contentWindow) return;
@@ -112,17 +113,40 @@ body.details-open .page-tools{display:flex}
     }), '*');
   }
 
-  function startMusicFromOpeningTap() {
-    if (musicStarted) return;
-    musicStarted = true;
-    musicPlaying = true;
-    musicButton.textContent = 'Ⅱ Pausar música';
-    musicButton.setAttribute('aria-pressed','true');
-    // El toque de «Toca para abrir» es el gesto del usuario que permite intentar el autoplay con sonido.
-    musicFrame.src = 'https://www.youtube-nocookie.com/embed/' + videoId +
-      '?autoplay=1&mute=0&controls=0&loop=1&playlist=' + videoId +
-      '&playsinline=1&enablejsapi=1&rel=0';
+  function updateMusicButton() {
+    musicButton.textContent = musicPlaying ? 'Ⅱ Pausar música' : '♫ Activar música';
+    musicButton.setAttribute('aria-pressed', String(musicPlaying));
   }
+
+  function unlockMusicWithGesture() {
+    if (!musicStarted || musicUnlocked) return;
+    musicUnlocked = true;
+    sendYouTubeCommand('unMute');
+    sendYouTubeCommand('setVolume');
+    sendYouTubeCommand('playVideo');
+    musicPlaying = true;
+    updateMusicButton();
+  }
+
+  function startMusicFromOpeningTap() {
+    if (!musicStarted) {
+      musicStarted = true;
+      musicPlaying = true;
+      musicFrame.src = 'https://www.youtube-nocookie.com/embed/' + videoId +
+        '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + videoId +
+        '&playsinline=1&enablejsapi=1&rel=0';
+    }
+    unlockMusicWithGesture();
+    updateMusicButton();
+  }
+
+  // Intento de reproducción desde que carga la invitación. Se inicia silenciada
+  // porque Safari/Chrome bloquean el autoplay con sonido hasta que el visitante toque la página.
+  musicStarted = true;
+  musicFrame.src = 'https://www.youtube-nocookie.com/embed/' + videoId +
+    '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + videoId +
+    '&playsinline=1&enablejsapi=1&rel=0';
+  musicButton.textContent = '♫ Activar música';
 
   // Unas cuantas estrellas grandes que cruzan toda la pantalla de arriba hacia abajo.
   for (let i = 0; i < 18; i++) {
@@ -175,15 +199,19 @@ body.details-open .page-tools{display:flex}
   });
 
   musicButton.addEventListener('click', () => {
-    if (!musicStarted) {
-      startMusicFromOpeningTap();
+    if (!musicUnlocked) {
+      unlockMusicWithGesture();
       return;
     }
     musicPlaying = !musicPlaying;
     sendYouTubeCommand(musicPlaying ? 'playVideo' : 'pauseVideo');
-    musicButton.textContent = musicPlaying ? 'Ⅱ Pausar música' : '♫ Activar música';
-    musicButton.setAttribute('aria-pressed', String(musicPlaying));
+    updateMusicButton();
   });
+
+  // Cualquier primer toque dentro de la invitación habilita el sonido.
+  document.addEventListener('pointerdown', () => {
+    if (!musicUnlocked) unlockMusicWithGesture();
+  }, {once:true});
 
   // El calendario se descarga desde el botón que ya está dibujado en la portada.
   document.getElementById('cover-calendar').addEventListener('click', () => {
