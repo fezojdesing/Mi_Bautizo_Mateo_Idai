@@ -119,12 +119,13 @@ body:not(.details-open) #back-cover{visibility:hidden}
   }
 
   function unlockMusicWithGesture() {
-    if (!musicStarted || musicUnlocked) return;
+    if (musicUnlocked) return;
     musicUnlocked = true;
-    sendYouTubeCommand('unMute');
-    sendYouTubeCommand('setVolume');
-    sendYouTubeCommand('playVideo');
     musicPlaying = true;
+    // Recarga el reproductor con sonido aprovechando el toque real del visitante.
+    musicFrame.src = 'https://www.youtube-nocookie.com/embed/' + videoId +
+      '?autoplay=1&mute=0&controls=0&loop=1&playlist=' + videoId +
+      '&playsinline=1&enablejsapi=1&rel=0';
     updateMusicButton();
   }
 
@@ -207,11 +208,6 @@ body:not(.details-open) #back-cover{visibility:hidden}
     sendYouTubeCommand(musicPlaying ? 'playVideo' : 'pauseVideo');
     updateMusicButton();
   });
-
-  // Cualquier primer toque dentro de la invitación habilita el sonido.
-  document.addEventListener('pointerdown', () => {
-    if (!musicUnlocked) unlockMusicWithGesture();
-  }, {once:true});
 
   // El calendario se descarga desde el botón que ya está dibujado en la portada.
   document.getElementById('cover-calendar').addEventListener('click', () => {
