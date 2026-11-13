@@ -91,7 +91,7 @@ body:not(.details-open) #back-cover{visibility:hidden}
   <button class="glass-control" id="back-cover" type="button">‹ Portada</button>
   <button class="glass-control" id="music-toggle" type="button" aria-pressed="false">♫ Activar música</button>
 </div>
-<iframe id="music-player" title="Música de la invitación" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<iframe id="music-player" title="Música de la invitación" src="https://www.youtube-nocookie.com/embed/RTInYbT-amM?enablejsapi=1&controls=0&loop=1&playlist=RTInYbT-amM&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
 <script>
 (() => {
@@ -102,42 +102,66 @@ body:not(.details-open) #back-cover{visibility:hidden}
   const musicFrame = document.getElementById('music-player');
   const musicButton = document.getElementById('music-toggle');
   const videoId = 'RTInYbT-amM';
-  let musicStarted = false;
+  let musicPlayer = null;
+  let playerReady = false;
   let musicPlaying = false;
-  let musicUnlocked = false;
-
-  function sendYouTubeCommand(func) {
-    if (!musicFrame.contentWindow) return;
-    musicFrame.contentWindow.postMessage(JSON.stringify({
-      event:'command',func, args:[]
-    }), '*');
-  }
+  let startWhenReady = false;
 
   function updateMusicButton() {
     musicButton.textContent = musicPlaying ? 'Ⅱ Pausar música' : '♫ Activar música';
     musicButton.setAttribute('aria-pressed', String(musicPlaying));
   }
 
-  function unlockMusicWithGesture() {
-    if (musicUnlocked) return;
-    // Inicia el reproductor una sola vez, directamente desde el toque del visitante.
-    // Evitamos cargar primero una versión silenciada y recargarla enseguida con sonido,
-    // porque ese doble cambio puede hacer que Safari/YouTube pierdan la autorización.
-    musicUnlocked = true;
-    musicStarted = true;
+  function playMusicFromGesture() {
+    // El reproductor ya está preparado: el toque solo ordena reproducir.
+    if (!playerReady || !musicPlayer) {
+      startWhenReady = true;
+      musicButton.textContent = '♫ Preparando música…';
+      return;
+    }
+    musicPlayer.unMute();
+    musicPlayer.setVolume(85);
+    musicPlayer.playVideo();
     musicPlaying = true;
-    musicFrame.src = 'https://www.youtube-nocookie.com/embed/' + videoId +
-      '?autoplay=1&mute=0&controls=0&loop=1&playlist=' + videoId +
-      '&playsinline=1&enablejsapi=1&rel=0';
     updateMusicButton();
   }
 
   function startMusicFromOpeningTap() {
-    unlockMusicWithGesture();
+    playMusicFromGesture();
   }
 
-  // No cargamos primero una versión silenciada: el primer toque en
-  // «Toca para abrir» inicia directamente la música con sonido.
+  // Prepara el reproductor antes de la interacción para evitar recargarlo al abrir.
+  window.onYouTubeIframeAPIReady = function() {
+    musicPlayer = new YT.Player('music-player', {
+      events: {
+        onReady: function(event) {
+          playerReady = true;
+          event.target.cueVideoById({videoId: videoId});
+          if (startWhenReady) {
+            startWhenReady = false;
+            event.target.unMute();
+            event.target.setVolume(85);
+            event.target.playVideo();
+            musicPlaying = true;
+            updateMusicButton();
+          }
+        },
+        onStateChange: function(event) {
+          if (event.data === YT.PlayerState.PLAYING) {
+            musicPlaying = true;
+            updateMusicButton();
+          } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+            musicPlaying = false;
+            updateMusicButton();
+          }
+        }
+      }
+    });
+  };
+
+  const youtubeApi = document.createElement('script');
+  youtubeApi.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(youtubeApi);
   musicButton.textContent = '♫ Activar música';
 
   // Unas cuantas estrellas grandes que cruzan toda la pantalla de arriba hacia abajo.
@@ -191,13 +215,17 @@ body:not(.details-open) #back-cover{visibility:hidden}
   });
 
   musicButton.addEventListener('click', () => {
-    if (!musicUnlocked) {
-      unlockMusicWithGesture();
+    if (!playerReady || !musicPlayer) {
+      playMusicFromGesture();
       return;
     }
-    musicPlaying = !musicPlaying;
-    sendYouTubeCommand(musicPlaying ? 'playVideo' : 'pauseVideo');
-    updateMusicButton();
+    if (musicPlaying) {
+      musicPlayer.pauseVideo();
+      musicPlaying = false;
+      updateMusicButton();
+    } else {
+      playMusicFromGesture();
+    }
   });
 
   // El calendario se descarga desde el botón que ya está dibujado en la portada.
