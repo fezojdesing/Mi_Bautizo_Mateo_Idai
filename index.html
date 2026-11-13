@@ -89,7 +89,7 @@ body:not(.details-open) #back-cover{visibility:hidden}
 
 <div class="page-tools" id="page-tools" aria-label="Controles de la invitación">
   <button class="glass-control" id="back-cover" type="button">‹ Portada</button>
-  <button class="glass-control" id="music-toggle" type="button" aria-pressed="false">♫ Activar música</button>
+  <button class="glass-control" id="music-toggle" type="button" aria-pressed="false">Activar música</button>
 </div>
 <iframe id="music-player" title="Música de la invitación" src="https://www.youtube-nocookie.com/embed/RTInYbT-amM?enablejsapi=1&controls=0&loop=1&playlist=RTInYbT-amM&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
@@ -108,7 +108,7 @@ body:not(.details-open) #back-cover{visibility:hidden}
   let startWhenReady = false;
 
   function updateMusicButton() {
-    musicButton.textContent = musicPlaying ? 'Ⅱ Pausar música' : '♫ Activar música';
+    musicButton.textContent = musicPlaying ? 'Pausar música' : 'Activar música';
     musicButton.setAttribute('aria-pressed', String(musicPlaying));
   }
 
@@ -116,7 +116,7 @@ body:not(.details-open) #back-cover{visibility:hidden}
     // El reproductor ya está preparado: el toque solo ordena reproducir.
     if (!playerReady || !musicPlayer) {
       startWhenReady = true;
-      musicButton.textContent = '♫ Preparando música…';
+      musicButton.textContent = 'Preparando música…';
       return;
     }
     musicPlayer.unMute();
@@ -162,7 +162,7 @@ body:not(.details-open) #back-cover{visibility:hidden}
   const youtubeApi = document.createElement('script');
   youtubeApi.src = 'https://www.youtube.com/iframe_api';
   document.head.appendChild(youtubeApi);
-  musicButton.textContent = '♫ Activar música';
+  musicButton.textContent = 'Activar música';
 
   // Unas cuantas estrellas grandes que cruzan toda la pantalla de arriba hacia abajo.
   for (let i = 0; i < 18; i++) {
