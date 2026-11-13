@@ -41,7 +41,6 @@ body{font-family:Arial,sans-serif}
 .hotspot{position:absolute;z-index:5;display:block;touch-action:manipulation;padding:0;margin:0;border:0;background:transparent;border-radius:999px;cursor:pointer;line-height:normal;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .hotspot:focus-visible{outline:3px solid #d6a942;outline-offset:3px;background:#ffffff20}
 #cover-open{left:5%;top:73.8%;width:90%;height:5.2%;z-index:6}
-#cover-calendar{left:5%;top:79.2%;width:90%;height:8%;z-index:6}
 #church-map{left:5%;top:56.5%;width:90%;height:12%;}
 #reception-map{left:27%;top:76.7%;width:46%;height:2.5%}
 #fezoj-link{left:23%;top:95.6%;width:54%;height:2.4%}
@@ -67,7 +66,6 @@ body:not(.details-open) #back-cover{visibility:hidden}
   <div class="art-wrap">
     <img class="art" src="./portada_1.jpg" alt="Portada de Mi Bautizo Mateo Idai" fetchpriority="high">
     <button class="hotspot" id="cover-open" type="button" aria-label="Toca para abrir la invitación"></button>
-    <button class="hotspot" id="cover-calendar" type="button" aria-label="Agendar evento"></button>
   </div>
 </section>
 
@@ -226,26 +224,6 @@ body:not(.details-open) #back-cover{visibility:hidden}
     } else {
       playMusicFromGesture();
     }
-  });
-
-  // El calendario se descarga desde el botón que ya está dibujado en la portada.
-  document.getElementById('cover-calendar').addEventListener('click', () => {
-    const lines = [
-      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Fezoj//Bautizo Mateo Idai//ES',
-      'CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:mateo-idai-bautizo-20261219@fezoj',
-      'DTSTAMP:20261113T000000Z','DTSTART;TZID=America/Mexico_City:20261219T120000',
-      'DTEND;TZID=America/Mexico_City:20261219T130000','SUMMARY:Bautizo de Mateo Idai',
-      'DESCRIPTION:Celebración del bautizo de Mateo Idai.','END:VEVENT','END:VCALENDAR'
-    ];
-    const blob = new Blob([lines.join('\r\n')], {type:'text/calendar;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'Bautizo-Mateo-Idai.ics';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
   });
 
   // Regresar se hace con el botón Atrás del navegador/teléfono, sin añadir otro botón visual.
