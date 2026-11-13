@@ -85,7 +85,7 @@ body:not(.details-open) #back-cover{visibility:hidden}
 
 <section class="screen" id="intro-video-screen" aria-label="Video de bienvenida" aria-hidden="true">
   <div class="video-frame">
-    <video id="intro-video" playsinline webkit-playsinline preload="auto" disablepictureinpicture>
+    <video id="intro-video" muted playsinline webkit-playsinline preload="auto" disablepictureinpicture>
       <source src="./Mateo%20Idai.mp4" type="video/mp4">
     </video>
     <div id="video-loading" role="status" aria-live="polite">
@@ -203,6 +203,10 @@ body:not(.details-open) #back-cover{visibility:hidden}
   }
 
   function playIntroVideo() {
+    // El video va silenciado para que no tome el foco de audio ni interrumpa el MP3.
+    introVideo.muted = true;
+    introVideo.defaultMuted = true;
+    introVideo.setAttribute('muted', '');
     cover.classList.remove('active');
     details.classList.remove('active');
     introScreen.classList.add('active');
