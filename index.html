@@ -115,7 +115,9 @@ body:not(.details-open) #back-cover{visibility:hidden}
   <button class="glass-control" id="back-cover" type="button">‹ Portada</button>
   <button class="glass-control" id="music-toggle" type="button" aria-pressed="false">Activar música</button>
 </div>
-<iframe id="music-player" title="Música de la invitación" src="https://www.youtube-nocookie.com/embed/RTInYbT-amM?enablejsapi=1&controls=0&loop=1&playlist=RTInYbT-amM&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<audio id="music-player" preload="auto" loop>
+  <source src="./musica.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 (() => {
@@ -125,69 +127,31 @@ body:not(.details-open) #back-cover{visibility:hidden}
   const introVideo = document.getElementById('intro-video');
   const layer = document.getElementById('sparkles');
   const palette = ['#d7b84f','#8eafc6','#a98768'];
-  const musicFrame = document.getElementById('music-player');
+  const musicPlayer = document.getElementById('music-player');
   const musicButton = document.getElementById('music-toggle');
-  const videoId = 'RTInYbT-amM';
-  let musicPlayer = null;
-  let playerReady = false;
   let musicPlaying = false;
-  let startWhenReady = false;
 
   function updateMusicButton() {
+    musicPlaying = !musicPlayer.paused && !musicPlayer.ended;
     musicButton.textContent = musicPlaying ? 'Pausar música' : 'Activar música';
     musicButton.setAttribute('aria-pressed', String(musicPlaying));
   }
 
   function playMusicFromGesture() {
-    // El reproductor ya está preparado: el toque solo ordena reproducir.
-    if (!playerReady || !musicPlayer) {
-      startWhenReady = true;
-      musicButton.textContent = 'Preparando música…';
-      return;
+    const playback = musicPlayer.play();
+    if (playback && typeof playback.then === 'function') {
+      playback.then(updateMusicButton).catch(() => {
+        musicPlaying = false;
+        updateMusicButton();
+      });
+    } else {
+      updateMusicButton();
     }
-    musicPlayer.unMute();
-    musicPlayer.setVolume(85);
-    musicPlayer.playVideo();
-    musicPlaying = true;
-    updateMusicButton();
   }
 
-  function startMusicFromOpeningTap() {
-    playMusicFromGesture();
-  }
-
-  // Prepara el reproductor antes de la interacción para evitar recargarlo al abrir.
-  window.onYouTubeIframeAPIReady = function() {
-    musicPlayer = new YT.Player('music-player', {
-      events: {
-        onReady: function(event) {
-          playerReady = true;
-          event.target.cueVideoById({videoId: videoId});
-          if (startWhenReady) {
-            startWhenReady = false;
-            event.target.unMute();
-            event.target.setVolume(85);
-            event.target.playVideo();
-            musicPlaying = true;
-            updateMusicButton();
-          }
-        },
-        onStateChange: function(event) {
-          if (event.data === YT.PlayerState.PLAYING) {
-            musicPlaying = true;
-            updateMusicButton();
-          } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-            musicPlaying = false;
-            updateMusicButton();
-          }
-        }
-      }
-    });
-  };
-
-  const youtubeApi = document.createElement('script');
-  youtubeApi.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(youtubeApi);
+  musicPlayer.addEventListener('play', updateMusicButton);
+  musicPlayer.addEventListener('pause', updateMusicButton);
+  musicPlayer.addEventListener('ended', updateMusicButton);
   musicButton.textContent = 'Activar música';
 
   // Unas cuantas estrellas grandes que cruzan toda la pantalla de arriba hacia abajo.
@@ -261,6 +225,8 @@ body:not(.details-open) #back-cover{visibility:hidden}
   });
 
   document.getElementById('cover-open').addEventListener('click', () => {
+    // Inicia el audio local dentro del mismo toque que abre la invitación.
+    playMusicFromGesture();
     history.pushState({page:'video'}, '', '#video');
     playIntroVideo();
   });
@@ -271,13 +237,8 @@ body:not(.details-open) #back-cover{visibility:hidden}
   });
 
   musicButton.addEventListener('click', () => {
-    if (!playerReady || !musicPlayer) {
-      playMusicFromGesture();
-      return;
-    }
-    if (musicPlaying) {
-      musicPlayer.pauseVideo();
-      musicPlaying = false;
+    if (musicPlaying || (!musicPlayer.paused && !musicPlayer.ended)) {
+      musicPlayer.pause();
       updateMusicButton();
     } else {
       playMusicFromGesture();
